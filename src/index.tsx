@@ -5,21 +5,32 @@ import { Provider } from 'react-redux';
 import { Route, Switch } from 'react-router'; // react-router v4
 import { ConnectedRouter } from 'connected-react-router';
 import './index.css';
+import 'bootstrap/dist/css/bootstrap.css';
 import registerServiceWorker from './registerServiceWorker';
 import { store, history } from './store';
 
-const paths = (
-    <div>
-        <Switch>
-            <Route exact path="/" component={App} />
-            <Route render={() => (<div>404 idk</div>)} />
-        </Switch>
-    </div>
-);
+const paths = [
+    {
+        name:'Home',
+        path:'/',
+        component:App,
+    },
+];
 
 ReactDOM.render(
     <Provider store={store}>
-        <ConnectedRouter history={history} children={paths} />
+        <ConnectedRouter history={history} >
+            <div>
+                <Switch>
+                    {
+                        paths.map((path) =>
+                            <Route exact path={path.path} component={path.component}/>,
+                        )
+                    }
+                     <Route render={() => (<div>404 lol idk</div>)} />
+                </Switch>
+            </div>
+        </ConnectedRouter>
     </Provider>,
     document.getElementById('root') as HTMLElement,
 );

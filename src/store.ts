@@ -2,6 +2,8 @@ import { createStore, combineReducers, compose, applyMiddleware, Reducer } from 
 import { connectRouter, routerMiddleware, RouterState  } from 'connected-react-router';
 import { createBrowserHistory } from 'history';
 import { Omit } from './helpers';
+import thunk from 'redux-thunk';
+
 
 const reducers = combineReducers<Omit<State, 'router'>>({
 
@@ -29,6 +31,7 @@ const enhancer = composeEnhancers(
     // enable async/impure reducers
     applyMiddleware(
         routerMiddleware(history),
+        thunk,
     ),
 );
 
