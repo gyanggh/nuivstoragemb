@@ -4,12 +4,14 @@ import { createBrowserHistory } from 'history';
 import { Omit } from './helpers';
 import thunk from 'redux-thunk';
 
+import { UIState, uiReducer } from './reducers/ui';
 
 const reducers = combineReducers<Omit<State, 'router'>>({
-
+    ui: uiReducer,
 }) as Reducer<State>;
 
-interface State{
+export interface State{
+    ui: UIState;
     router: RouterState;
 }
 

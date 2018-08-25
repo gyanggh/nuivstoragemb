@@ -1,23 +1,10 @@
 import * as React from 'react';
-import { I18n } from 'aws-amplify';
 
 import './App.css';
 
 import logoSvg from './logo.svg';
 
-const dict = {
-    en: {
-        'Sign In': 'Sign In',
-        'Sign Up': 'Sign Up',
-        'Feed': 'Feed',
-        'Videos': 'Videos',
-    },
-};
-
-
-I18n.putVocabularies(dict);
-
-class App extends React.Component {
+export default class App extends React.Component {
     public render() {
         return (
             <div className="App">
@@ -32,5 +19,3 @@ class App extends React.Component {
         );
     }
 }
-
-export default App;

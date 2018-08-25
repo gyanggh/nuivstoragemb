@@ -1,5 +1,5 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
-import { toggleNav } from '../actions/ui';
+import { toggleNav, closeNav } from '../actions/ui';
 
 export interface UIState {
     navOpen: boolean;
@@ -14,7 +14,13 @@ const toggleNavReducer = (state: UIState) => ({
     navOpen : !state.navOpen,
 });
 
+const closeNavReducer = (state: UIState) => ({
+    ...state,
+    navOpen : false,
+});
+
 export const uiReducer =
     reducerWithInitialState(INITAL_UI_STATE)
         .case(toggleNav, toggleNavReducer)
+        .case(closeNav, closeNavReducer)
         .build();
