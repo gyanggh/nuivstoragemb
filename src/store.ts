@@ -5,13 +5,16 @@ import { Omit } from './helpers';
 import thunk from 'redux-thunk';
 
 import { UIState, uiReducer } from './reducers/ui';
+import { RecordState, recordReducer } from './reducers/videoRecords';
 
 const reducers = combineReducers<Omit<State, 'router'>>({
     ui: uiReducer,
+    records: recordReducer,
 }) as Reducer<State>;
 
 export interface State{
     ui: UIState;
+    records: RecordState;
     router: RouterState;
 }
 

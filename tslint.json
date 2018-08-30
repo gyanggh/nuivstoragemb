@@ -6,9 +6,9 @@
       4,
       { "SwitchCase": 1 }
     ],
-    "no-unused-variable": true,
     "variable-name": [ true, "allow-pascal-case" ],
-    "import-name" : false
+    "import-name" : false,
+    "no-unused-variable" : false
   },
   "exclude": ["node_modules/*/*"]
 }

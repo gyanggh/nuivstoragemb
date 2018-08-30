@@ -1,12 +1,14 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
-import { toggleNav, closeNav } from '../actions/ui';
+import { toggleNav, closeNav, setSearchWord } from '../actions/ui';
 
 export interface UIState {
     navOpen: boolean;
+    searchWord:string;
 }
 
 const INITAL_UI_STATE: UIState = {
     navOpen: false,
+    searchWord : '',
 };
 
 const toggleNavReducer = (state: UIState) => ({
@@ -19,8 +21,14 @@ const closeNavReducer = (state: UIState) => ({
     navOpen : false,
 });
 
+const setSearchWordReducer = (state: UIState, word: string) => ({
+    ...state,
+    searchWord : word,
+});
+
 export const uiReducer =
     reducerWithInitialState(INITAL_UI_STATE)
         .case(toggleNav, toggleNavReducer)
         .case(closeNav, closeNavReducer)
+        .case(setSearchWord, setSearchWordReducer)
         .build();

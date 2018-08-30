@@ -7,11 +7,17 @@ import {
     NavbarToggler,
     NavbarBrand,
     Nav,
-    NavItem} from 'reactstrap';
+    NavItem,
+    DropdownMenu,
+    UncontrolledDropdown,
+    DropdownToggle,
+    DropdownItem,
+} from 'reactstrap';
 import { NavLink } from 'react-router-dom';
 import { State } from '../../store';
 import { toggleNav } from '../../actions/ui';
-import { RoutePath } from '../../index';
+import { RoutePath, RoutePathEnd } from '../../index';
+import { translate } from '../../helpers';
 
 const mapStateToProps = ({ ui }: State, { paths } : {paths:RoutePath[]}) => ({
     paths,
@@ -24,26 +30,43 @@ const mapDispatchToProps = {
 
 const stateProps = returntypeof(mapStateToProps);
 type NavbarProps = (typeof stateProps) & (typeof mapDispatchToProps);
-
+const renderSinglePath = (path : RoutePathEnd, prefix : string) => (
+    <NavItem key={path.path}>
+       <NavLink
+           exact
+           to={prefix + path.path}
+           className="nav-link"
+           activeClassName="active">
+           {translate(path.name)}
+       </NavLink>
+    </NavItem>
+);
 const navbar = (props : NavbarProps) => (
     <div>
-        <Navbarstrap dark fixed="top" expand="md">
+        <Navbarstrap dark color="dark " fixed="top" expand="md">
             <NavbarToggler onClick={ev => props.toggle() } />
             <NavbarBrand href="/">Brand</NavbarBrand>
             <Collapse isOpen={props.open} navbar>
                 <Nav pills navbar>
-                    {props.paths.map(path => (
-                        <NavItem key={path.path}>
-                           <NavLink
-                               exact
-                               to={path.path}
-                               className="nav-link"
-                               activeClassName="active">
-                               {path.name}
-                           </NavLink>
-                        </NavItem>
-                    ))}
-                    <NavItem>
+                    {props.paths.map(
+                        path => path.page ? renderSinglePath(path, '') :
+                            <UncontrolledDropdown key={path.prefix} nav inNavbar>
+                                <DropdownToggle nav caret>
+                                    {translate(path.nameBase)}
+                                </DropdownToggle>
+                                <DropdownMenu className="bg-dark">
+                                    {path.children.map(
+                                        pathEnd =>
+                                        <DropdownItem key={pathEnd.name}>
+                                            {renderSinglePath(pathEnd, path.prefix)}
+                                        </DropdownItem>,
+                                    )}
+                                </DropdownMenu>
+                            </UncontrolledDropdown>,
+                     )}
+                </Nav>
+                <Nav navbar className="ml-md-auto">
+                    <NavItem className="ml-auto">
                         auth
                     </NavItem>
                 </Nav>
