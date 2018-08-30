@@ -110,14 +110,9 @@ export const NewRecord = (
             <h3> Tags </h3>
             <VideoTagsEditor ref={tagsRef} record={{}}/>
             <FormGroup inline>
-                <Button color="primary" onClick={() => {
-                    submit({
-                        tags: tagsRef.current ? tagsRef.current.getTags() : {} ,
-                    });
-                    console.log({
-                        tags: tagsRef.current ? tagsRef.current.getTags() : {} ,
-                    });
-                }}>{translate('Submit')}</Button>
+                <Button color="primary" onClick={() => submit({
+                    tags: tagsRef.current ? tagsRef.current.getTags() : {} ,
+                })}>{translate('Submit')}</Button>
                 <Button color="danger" onClick={cancel}>{translate('Cancel')}</Button>
             </FormGroup>
         </div>

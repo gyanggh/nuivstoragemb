@@ -19,25 +19,35 @@ const apiRequest =
         body : JSON.stringify(props.body),
     }).then(res => res.json());
 
-export const fetchRecords = actionCreatorAsync<number, {
-    records: Record[],
-    lastIndex : object,
+export const fetchRecords = actionCreatorAsync<{
+    rows?: number;
+    restart : boolean;
+}, {
+    records : Record[];
+    lastIndex : any;
 }>(
     'FETCH_RECORDS',
-    (rows, dispatch, getState) =>
-        apiRequest({
-            endpoint : 'getVideos',
-            body : {
-                user : userName,
-                lastIndex : getState().records.lastIndex,
-                limit : rows,
-            },
-            method : 'GET',
-        }).then(obj => ({
-            records : obj.items,
-            lastIndex : obj.lastIndex,
-        })),
-    );
+    async ({ rows = Number.MAX_VALUE, restart }, dispatch, getState) => {
+        const records : Record[] = [];
+        let lastIndex : any = restart ? undefined : getState().records.lastIndex;
+        while (records.length < rows) {
+            const res = await apiRequest({
+                endpoint : '/getVideos',
+                body : {
+                    lastIndex,
+                    user : userName,
+                    limit : rows - records.length,
+                },
+                method : 'POST',
+            });
+            records.push(res.items);
+            lastIndex = res.lastIndex;
+        }
+        return {
+            records,
+            lastIndex,
+        };
+    });
 
 export const editRecord = actionCreatorAsync<{
     id:string;

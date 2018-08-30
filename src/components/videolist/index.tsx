@@ -3,19 +3,21 @@ import { asyncReactor } from 'async-reactor';
 import Loader from 'react-loader-spinner';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { returntypeof } from 'react-redux-typescript';
 import { store, State } from '../../store';
 import { goBack } from 'connected-react-router';
 import * as Primatives from './videoEditor';
 import { getRecord, editRecord, addRecord, fetchRecords } from '../../actions/videoRecords';
-import { setSearchWord } from '../../actions/ui';
+import { setSearchWord, openModal } from '../../actions/ui';
 import { RecordSubmitted, Record } from '../../reducers/videoRecords';
-import { Table } from 'reactstrap';
-// import { translate } from '../../helpers';
+import { translate } from '../../helpers';
 import { createSelector } from 'reselect';
+import ReactTable from 'react-table';
+import 'react-table/react-table.css';
 // tslint:disable-next-line
-// import { /* Table, Column, */ WindowScroller, AutoSizer, InfiniteLoader, List } from 'react-virtualized';
+// const FoldableTableHOC = require('react-table/lib/hoc/foldableTable');
+// const FoldableTable = FoldableTableHOC(ReactTable) as React.ComponentType<Partial<TableProps>>;
 import * as moment from 'moment';
+import { union } from 'lodash';
 
 export const EditRecord = (id:string, close : () => void) => asyncReactor(
     async () => (<Primatives.EditRecord
@@ -42,133 +44,82 @@ export const NewRecordPage = () => NewRecord(() => store.dispatch(goBack()));
 const mapStateToProps = createSelector<State, Record[], string, {
     records : Record[];
     searchWord : string;
+    tags : string[];
 }>(
     state => state.records.records,
     state => state.ui.searchWord,
-    (records, searchWord) => ({
-        searchWord,
-        records : records.filter(
+    (records, searchWord) => {
+        const recordsFiltered = records.filter(
             record => Object.keys(record.tags)
             .map(key => record.tags[key].toString().includes(searchWord)),
-        ),
-    }),
+        );
+        return {
+            searchWord,
+            records : recordsFiltered,
+            tags : union<string>(...recordsFiltered.map(
+                rec => Object.keys(rec.tags)
+                .filter(
+                    tag => (typeof rec.tags[tag] === 'string' || typeof rec.tags[tag] === 'number'),
+                ),
+            )),
+        };
+    },
 );
 
 const mapDispatchToProps = (dispatch : Dispatch) => ({
+    openModal,
     search : () => dispatch(setSearchWord),
-    loadRows : (n:number) => dispatch(fetchRecords.action(n) as any),
+    loadRows : () => dispatch(fetchRecords.action({
+        restart : false,
+    }) as any),
 });
 
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type VideosListProps = (typeof stateProps) & (typeof dispatchProps);
+type VideosListProps = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>;
 
 const VideosListElem = (props : VideosListProps) => (
-    <Table>
-        <thead>
-            <tr>
-                <th>id</th>
-                <th>student</th>
-                <th>teacher</th>
-                <th>tags</th>
-                <th>timestamp</th>
-            </tr>
-        </thead>
-        <tbody>
-            {props.records.map(record => (
-                <tr>
-                    <th scope="row">{record.id}</th>
-                    <td>{record.user}</td>
-                    <td>{record.teacher}</td>
-                    <td><pre>{JSON.stringify(record.tags, null, 2)}</pre></td>
-                    <td>{moment(record.timestamp).format('MMMM Do YYYY, h:mm:ss a')}</td>
-                </tr>
-            ))}
-        </tbody>
-    </Table>
+   <div>
+        <div> controls go here eventually </div>
+
+        <ReactTable
+        data={props.records}
+        columns={[{
+            Header:translate('Thumbnail'),
+            accessor: 'id',
+            Cell : () => <span> Coming soon! </span>,
+        }, {
+            Header:translate('Student'),
+            accessor: 'user',
+            Cell : (innerProps : any) => <span onClick={() => props.openModal({
+                children : [
+                    'User',
+                    'Coming Soon!',
+                    'Idk',
+                ],
+                direction : 'right',
+            })}> {innerProps.value} </span>,
+        }, {
+            Header:translate('Teacher'),
+            accessor: 'teacher',
+            Cell : (innerProps : any) => <span onClick={() => props.openModal({
+                children : [
+                    'Teacher',
+                    'Coming Soon!',
+                    'Idk',
+                ],
+                direction : 'right',
+            })}> {innerProps.value} </span>,
+        }, {
+            Header:translate('Time'),
+            accessor: 'timestamp',
+            Cell : (innerProps : any) => <span>{moment(innerProps.value).calendar()}</span>,
+        }, ...props.tags.map(tag => ({
+            Header:tag,
+            accessor: 'tags.' + tag,
+            foldable: true,
+        }),
+        )]}
+        />
+   </div>
 );
 
 export const VideosList = connect(mapStateToProps, mapDispatchToProps)(VideosListElem);
-
-/*
-
-<WindowScroller
-        scrollElement={window}>
-            {({ height, isScrolling, registerChild, onChildScroll, scrollTop } : any) => (
-                <AutoSizer disableHeight>
-                    {({ width }) => (
-                      <div ref={registerChild}>
-                        <InfiniteLoader
-                        isRowLoaded={({ index }) => index < props.records.length}
-                        loadMoreRows={
-                            ({ stopIndex }) => props.loadRows(stopIndex - props.records.length + 1)
-                        }
-                        rowCount={props.records.length}>
-                        {({ onRowsRendered, registerChild } :
-                            {onRowsRendered : any , registerChild: any}) => (
-                            <List
-                                width={width}
-                                height={height}
-                                auto
-                                rowCount={props.records.length}
-                                rowHeight={20}
-                                rowRenderer={({ index }) =>
-                                    <div> { props.records[index].id } </div>
-                                }
-                              />
-                        )}
-                    </InfiniteLoader>
-                    </div>
-                    )}
-                </AutoSizer>
-          )}
-    </WindowScroller>
-
-    <Table
-                                wdth={300}
-                                autoHeight
-                                height={500}
-                                headerHeight={20}
-                                rowHeight={30}
-                                rowCount={props.records.length}
-                                rowGietter={({ index } : { index: number}) => props.records[index]}
-                                ref={registerChild}
-                                onRowsRendered={onRowsRendered}
-                                // isScrolling={isScrolling}
-                                // onScroll={onChildScroll}
-                            >
-                                <Column
-                                    labeel={translate('ID (internal)')}
-                                    dataKy="id"
-                                    width={100}
-                                />
-                                <Column
-                                    width={200}
-                                    label={translate('Student')}
-                                    dataKey="user"
-                                />
-                                <Column
-                                    width={200}
-                                    label={translate('Teacher')}
-                                    dataKey="teacher"
-                                />
-                                <Column
-                                    width={200}
-                                    label={translate('Tags')}
-                                    dataKey="tags"
-                                    flexGrow={1}
-                                    cellRenderer={
-                                        (cellData:any) => <pre>JSON.stringify(cellData)</pre>
-                                    }
-                                />
-                                <Column
-                                    width={200}
-                                    label={translate('Time')}
-                                    dataKey="timestamp"
-                                    cellRenderer={
-                                        (cellData:any) => moment(cellData)
-                                        .format('MMMM Do YYYY, h:mm:ss a')
-                                    }
-                                />
-                            </Table>
-*/
