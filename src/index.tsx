@@ -13,7 +13,7 @@ import { NewRecordPage, VideosList } from './components/videolist';
 import { flatten } from 'lodash';
 
 import Amplify from 'aws-amplify';
-import { Authenticator  } from 'aws-amplify-react'; // or 'aws-amplify-react-native';
+import { Authenticator } from 'aws-amplify-react'; // or 'aws-amplify-react-native';
 
 Amplify.configure({
     Auth: {
@@ -29,6 +29,14 @@ Amplify.configure({
 
         // OPTIONAL - Enforce user authentication prior to accessing AWS resources or not
         mandatorySignIn: true,
+    },
+    API: {
+        endpoints: [
+            {
+                name: 'APIGateway',
+                endpoint: 'https://rfkgf56u78.execute-api.us-west-2.amazonaws.com/Prod',
+            },
+        ],
     },
 });
 

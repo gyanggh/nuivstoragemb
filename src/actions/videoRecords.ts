@@ -2,22 +2,32 @@ import actionCreatorFactory from 'typescript-fsa';
 import { asyncFactory } from 'typescript-fsa-redux-thunk';
 import { Record, RecordSubmitted } from '../reducers/videoRecords';
 import { State } from '../store';
+import { last, flatten } from 'lodash';
+import { Auth } from 'aws-amplify';
 
 const actionCreator = actionCreatorFactory('videoRecords');
 const actionCreatorAsync = asyncFactory<State>(actionCreator);
 
-const apiUrl = 'https://t5nfdpujx6.execute-api.us-west-2.amazonaws.com/Prod';
-const userName = 'TestUser';
+const apiUrl = 'https://rfkgf56u78.execute-api.us-west-2.amazonaws.com/Prod';
+const userName = 'TestStudent';
 
 const apiRequest =
-    (props: {
+    async (props: {
         endpoint : string,
         body?: object,
         method : 'GET' | 'POST' | 'PUT' | 'DELETE',
-    }) => fetch(apiUrl + props.endpoint, {
-        method : props.method,
-        body : JSON.stringify(props.body),
-    }).then(res => res.json());
+    }) => {
+        const session = await Auth.currentSession();
+        const res = await fetch(apiUrl + props.endpoint, {
+            method : props.method,
+            headers : {
+                Authorization: session.idToken.jwtToken,
+            },
+            // mode: 'no-cors',
+            body : JSON.stringify(props.body),
+        });
+        return res.json();
+    };
 
 export const fetchRecords = actionCreatorAsync<{
     rows?: number;
@@ -27,25 +37,27 @@ export const fetchRecords = actionCreatorAsync<{
     lastIndex : any;
 }>(
     'FETCH_RECORDS',
-    async ({ rows = Number.MAX_VALUE, restart }, dispatch, getState) => {
-        const records : Record[] = [];
+    async ({ rows = 100000, restart }, dispatch, getState) => {
+        const records : Record[][] = [];
         let lastIndex : any = restart ? undefined : getState().records.lastIndex;
-        while (records.length < rows) {
+        console.log('once');
+        do {
             const res = await apiRequest({
                 endpoint : '/getVideos',
                 body : {
                     lastIndex,
                     user : userName,
-                    limit : rows - records.length,
+                    limit : rows - records.map(record => record.length).reduce((a, b) => a + b, 0),
                 },
                 method : 'POST',
             });
             records.push(res.items);
             lastIndex = res.lastIndex;
-        }
+            console.log(lastIndex);
+        } while (records.length < rows && lastIndex != null);
         return {
-            records,
-            lastIndex,
+            records : flatten(records),
+            lastIndex : lastIndex || last(last(records)),
         };
     });
 

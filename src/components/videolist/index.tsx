@@ -49,10 +49,10 @@ const mapStateToProps = createSelector<State, Record[], string, {
     state => state.records.records,
     state => state.ui.searchWord,
     (records, searchWord) => {
-        const recordsFiltered = records.filter(
-            record => Object.keys(record.tags)
-            .map(key => record.tags[key].toString().includes(searchWord)),
-        );
+        const recordsFiltered = searchWord.trim() !== '' ? records.filter(
+            record => Object.keys(record.tags || {})
+            .reduce((a, key) => a || record.tags[key].toString().includes(searchWord), false),
+        ) : records;
         return {
             searchWord,
             records : recordsFiltered,
@@ -73,6 +73,16 @@ const mapDispatchToProps = (dispatch : Dispatch) => ({
         restart : false,
     }) as any),
 });
+
+let firstLoad: boolean = true;
+if (firstLoad) {
+    firstLoad = false;
+    new Promise(resolve => setTimeout(resolve, 1000)).then(
+        () => store.dispatch(fetchRecords.action({
+            restart : false,
+        }) as any),
+    );
+}
 
 type VideosListProps = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>;
 
