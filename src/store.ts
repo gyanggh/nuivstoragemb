@@ -6,16 +6,19 @@ import thunk from 'redux-thunk';
 
 import { UIState, uiReducer } from './reducers/ui';
 import { RecordState, recordReducer } from './reducers/videoRecords';
+import { UploadState, uploadReducer } from './reducers/videoUpload';
 
 const reducers = combineReducers<Omit<State, 'router'>>({
     ui: uiReducer,
     records: recordReducer,
+    uploads: uploadReducer,
 }) as Reducer<State>;
 
 export interface State{
     ui: UIState;
     records: RecordState;
     router: RouterState;
+    uploads: UploadState;
 }
 
 export const history = createBrowserHistory();
