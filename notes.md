@@ -1,0 +1,23 @@
+# Notes
+
+- V1 will be missing
+    - Feed
+    - Upload
+    - Still need to write translations
+- Permament problems
+    - A bit Janky, especially ui wise
+    - Not the prettiest
+    - No Transcoding (which means no thumbnails for one)
+    - No redeploy
+    - Fragile and hard to maintain: more a proof of concept than anything
+    - User list (dealbreaker? Can be added just may take a while)
+    - Good Search (similarily; though it's very "easy" to add later?)
+    - Untested
+- Notes
+    - AWS has piss poor docs and too much customization; things take way too long
+    - Should be good enough for a tech demo
+- Expect
+    - V2 with Feed upload translations
+    - Documentation of all things
+        - API endpoints (english)
+        - Current code (also english)

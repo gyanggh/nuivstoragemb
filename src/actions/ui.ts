@@ -11,3 +11,5 @@ export const setSearchWord = actionCreator<string>('SEARCH_FOR');
 export const openModal = actionCreator<ModalState>('OPEN_MODAL');
 
 export const closeModal = actionCreator<void>('CLOSE_MODAL');
+
+export const toggleAdvancedSearch = actionCreator<void>('TOGGLE_SEARCH');

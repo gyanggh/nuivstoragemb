@@ -1,5 +1,5 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
-import { fetchRecords, editRecord, addRecord } from '../actions/videoRecords';
+import { fetchRecords, editRecord, addRecord, addComment } from '../actions/videoRecords';
 
 export interface RecordState {
     records : Record[];
@@ -9,11 +9,20 @@ export interface RecordState {
 export interface RecordSubmitted {
     readonly id?: string;
     tags : RecordTags;
+    title?: string;
     user?: string;
     teacher?: string;
+    description?: string;
     readonly uploaded?: boolean;
     timestamp?: number;
     formats?: string[];
+    comments : {
+        [id:string] : {
+            comment : string;
+            user : string;
+            timestamp: number;
+        };
+    };
 }
 
 export type Record = Required<RecordSubmitted>;
@@ -48,17 +57,13 @@ const fetchRecordsReducer = (state: RecordState, payload : {
 const editRecordReducer = (state: RecordState, payload : {
     result : {
         record: Record,
-        index?: number,
     };
-}) => {
-    if (payload.result.index == null || state.records[payload.result.index] == null) return state;
-    return {
-        ...state,
-        records : state.records.map(
-            (item, index) => index === payload.result.index ? payload.result.record : item,
-        ),
-    };
-};
+}) => ({
+    ...state,
+    records : state.records.map(
+        item => item.id === payload.result.record.id ? payload.result.record : item,
+    ),
+});
 
 const addRecordReducer = (state: RecordState, payload : {
     result: Record;
@@ -71,5 +76,6 @@ export const recordReducer =
     reducerWithInitialState(INITAL_RECORD_STATE)
         .case(fetchRecords.async.done, fetchRecordsReducer)
         .case(editRecord.async.done, editRecordReducer)
+        .case(addComment.async.done, editRecordReducer)
         .case(addRecord.async.done, addRecordReducer)
         .build();

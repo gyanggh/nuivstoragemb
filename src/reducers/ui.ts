@@ -1,11 +1,15 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
-import { toggleNav, closeNav, setSearchWord, openModal, closeModal } from '../actions/ui';
+import { toggleNav, closeNav, setSearchWord, openModal,
+    closeModal,
+    toggleAdvancedSearch,
+} from '../actions/ui';
 import { ReactNode } from 'react';
 
 export interface UIState {
     navOpen: boolean;
     searchWord:string;
-    modal: Partial<ModalState>;
+    modal?: ModalState;
+    advancedSearch:boolean;
 }
 
 export interface ModalState {
@@ -16,7 +20,7 @@ export interface ModalState {
 const INITAL_UI_STATE: UIState = {
     navOpen: false,
     searchWord : '',
-    modal : {},
+    advancedSearch:false,
 };
 
 const toggleNavReducer = (state: UIState) => ({
@@ -39,9 +43,14 @@ const openModalReducer = (state: UIState, payload: ModalState) => ({
     modal : payload,
 });
 
-const closeModalReducer = (state: UIState) => ({
+const closeModalReducer = (state: UIState) => {
+    const { modal, ...rest } = state;
+    return rest;
+};
+
+const searchToggleReducer = (state: UIState) => ({
     ...state,
-    modal : {},
+    advancedSearch:!state.advancedSearch,
 });
 
 export const uiReducer =
@@ -51,4 +60,5 @@ export const uiReducer =
         .case(setSearchWord, setSearchWordReducer)
         .case(openModal, openModalReducer)
         .case(closeModal, closeModalReducer)
+        .case(toggleAdvancedSearch, searchToggleReducer)
         .build();

@@ -2,7 +2,8 @@ import actionCreatorFactory from 'typescript-fsa';
 import { asyncFactory } from 'typescript-fsa-redux-thunk';
 import { State } from '../store';
 import { S3 } from 'aws-sdk';
-import { last, curry } from 'lodash';
+import { last } from 'lodash';
+import { Record } from '../reducers/videoRecords';
 
 const actionCreator = actionCreatorFactory('videoUpload');
 const actionCreatorAsync = asyncFactory<State>(actionCreator);
@@ -43,9 +44,9 @@ export const uploadProgress = actionCreator<[string, number]>('UPLOAD_PROGRESS')
 
 export const uploadClear = actionCreator<string>('UPLOAD_CLEAR');
 
-export const getVideo = curry((
-    user: string,
-    teacher:string,
-    id:string,
-    extension: string,
-) => `${teacher}/${user}/${id}.${extension}`);
+export const getVideo = ({
+    user,
+    teacher,
+    id,
+    formats,
+} : Record) => `https://s3-us-west-2.amazonaws.com/${bucketName}/${teacher}/${user}/${id}.${'mp4'}`;

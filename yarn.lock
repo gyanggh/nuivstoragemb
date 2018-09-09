@@ -101,6 +101,10 @@
     reflect-metadata "^0.1.12"
     tslib "^1.8.1"
 
+"@ovotech/async-reactor-ts@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@ovotech/async-reactor-ts/-/async-reactor-ts-0.2.0.tgz#eb7a861d8b86ea9b5af176f36611761b17b11061"
+
 "@types/history@*", "@types/history@^4.7.0":
   version "4.7.0"
   resolved "https://registry.yarnpkg.com/@types/history/-/history-4.7.0.tgz#2fac51050c68f7d6f96c5aafc631132522f4aa3f"
@@ -4513,6 +4517,10 @@ load-json-file@^2.0.0:
     pify "^2.0.0"
     strip-bom "^3.0.0"
 
+load-script@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/load-script/-/load-script-1.0.0.tgz#0491939e0bee5643ee494a7e3da3d2bac70c6ca4"
+
 loader-runner@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/loader-runner/-/loader-runner-2.3.0.tgz#f482aea82d543e07921700d5a46ef26fdac6b8a2"
@@ -5815,7 +5823,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2:
+prop-types@^15.5.10, prop-types@^15.5.6, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.2.tgz#05d5ca77b4453e985d60fc7ff8c859094a497102"
   dependencies:
@@ -5969,6 +5977,12 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-beforeunload@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/react-beforeunload/-/react-beforeunload-1.0.4.tgz#8aff97c23a735d3a1bbcb7a6727e5db779a117c8"
+  dependencies:
+    prop-types "^15.5.10"
+
 react-dev-utils@^5.0.1:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-5.0.2.tgz#7bb68d2c4f6ffe7ed1184c5b0124fcad692774d2"
@@ -6024,6 +6038,14 @@ react-media-player@^0.7.3:
   resolved "https://registry.yarnpkg.com/react-media-player/-/react-media-player-0.7.3.tgz#c418aca5d4c7123ce3889b4d486b5d256193e727"
   dependencies:
     prop-types "^15.5.10"
+
+react-player@^1.6.4:
+  version "1.6.4"
+  resolved "https://registry.yarnpkg.com/react-player/-/react-player-1.6.4.tgz#a7410a23ae849aec1f1854040d3f56ccab054c21"
+  dependencies:
+    deepmerge "^2.0.1"
+    load-script "^1.0.0"
+    prop-types "^15.5.6"
 
 react-popper@^0.10.4:
   version "0.10.4"

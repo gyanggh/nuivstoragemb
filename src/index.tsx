@@ -10,10 +10,11 @@ import registerServiceWorker from './registerServiceWorker';
 import { store, history } from './store';
 import { Navbar } from './components/navbar';
 import { NewRecordPage, VideosList } from './components/videolist';
+import { SideModal } from './components/modal';
 import { flatten } from 'lodash';
 
 import Amplify from 'aws-amplify';
-import { Authenticator } from 'aws-amplify-react'; // or 'aws-amplify-react-native';
+import { Authenticator, Greetings } from 'aws-amplify-react'; // or 'aws-amplify-react-native';
 
 Amplify.configure({
     Auth: {
@@ -116,11 +117,12 @@ const AppContainers : React.SFC = (props: {
                              <Route render={() => (<div>404 lol idk</div>)} />
                         </Switch>
                     </div>
+                    <div><SideModal/></div>
                 </div>
             </ConnectedRouter>
         </Provider> : null);
 ReactDOM.render(
-    <Authenticator>
+    <Authenticator hide={[Greetings]}>
         <AppContainers />
     </Authenticator>,
     document.getElementById('root') as HTMLElement,

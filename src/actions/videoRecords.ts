@@ -14,7 +14,7 @@ const userName = 'TestStudent';
 const apiRequest =
     async (props: {
         endpoint : string,
-        body?: object,
+        body?: object | string,
         method : 'GET' | 'POST' | 'PUT' | 'DELETE',
     }) => {
         const session = await Auth.currentSession();
@@ -24,7 +24,7 @@ const apiRequest =
                 Authorization: session.idToken.jwtToken,
             },
             // mode: 'no-cors',
-            body : JSON.stringify(props.body),
+            body : typeof props.body === 'string' ? props.body : JSON.stringify(props.body),
         });
         return res.json();
     };
@@ -74,6 +74,26 @@ export const editRecord = actionCreatorAsync<{
         apiRequest({
             endpoint: 'video/' + id,
             body : record,
+            method : 'POST',
+        }).then(record => ({
+            record,
+            index,
+        })),
+    );
+
+export const addComment = actionCreatorAsync<{
+    id:string;
+    comment: string;
+    index?: number;
+}, {
+    index ?: number;
+    record: Record;
+}>(
+    'ADD_COMMENT',
+    ({ id, comment, index }) =>
+        apiRequest({
+            endpoint: 'video/' + id + 'comment/new',
+            body : comment,
             method : 'POST',
         }).then(record => ({
             record,
