@@ -19,7 +19,7 @@ export const upload = actionCreatorAsync<{
     title: string;
 }, {
     location: string;
-    title: string;
+    id:string;
 }>(
     'UPLOAD_VIDEO',
     async ({ user, teacher, file, id, title }, dispatch, getState) => {
@@ -30,16 +30,16 @@ export const upload = actionCreatorAsync<{
         });
         upload.on(
             'httpUploadProgress',
-            progress => dispatch(uploadProgress(progress.loaded / progress.total)),
+            progress => dispatch(uploadProgress([id, progress.loaded / progress.total])),
         );
         await upload.promise();
         return {
             location,
-            title,
+            id,
         };
     });
 
-export const uploadProgress = actionCreator<[string,number]>('UPLOAD_PROGRESS');
+export const uploadProgress = actionCreator<[string, number]>('UPLOAD_PROGRESS');
 
 export const uploadClear = actionCreator<string>('UPLOAD_CLEAR');
 

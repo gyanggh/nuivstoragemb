@@ -18,6 +18,7 @@ import 'react-table/react-table.css';
 // const FoldableTable = FoldableTableHOC(ReactTable) as React.ComponentType<Partial<TableProps>>;
 import * as moment from 'moment';
 import { union } from 'lodash';
+import { Hub } from 'aws-amplify';
 
 export const EditRecord = (id:string, close : () => void) => asyncReactor(
     async () => (<Primatives.EditRecord
@@ -74,15 +75,26 @@ const mapDispatchToProps = (dispatch : Dispatch) => ({
     }) as any),
 });
 
-let firstLoad: boolean = true;
-if (firstLoad) {
-    firstLoad = false;
-    new Promise(resolve => setTimeout(resolve, 1000)).then(
-        () => store.dispatch(fetchRecords.action({
-            restart : false,
-        }) as any),
-    );
+const alex : any = {};
+
+alex.onHubCapsule = (capsule : any) => {
+
+    switch (capsule.payload.event) {
+        case 'signIn':
+            store.dispatch(fetchRecords.action({
+                restart:false,
+            }) as any);
+            break;
+        case 'signUp':
+        case 'signOut':
+        case 'signIn_failure':
+        case 'configured':
+            break;
+    }
 }
+
+Hub.listen('auth', alex);
+
 
 type VideosListProps = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>;
 
