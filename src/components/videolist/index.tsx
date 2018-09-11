@@ -6,8 +6,8 @@ import { connect } from 'react-redux';
 import { store, State } from '../../store';
 import { goBack } from 'connected-react-router';
 import * as Primatives from './videoEditor';
-import { /*getRecord,*/
-    editRecord, addRecord, fetchRecords, addComment } from '../../actions/videoRecords';
+import { getRecord,
+    editRecord, addVideo, fetchRecords, addComment } from '../../actions/videoRecords';
 import { setSearchWord, openModal, closeModal,
     toggleAdvancedSearch } from '../../actions/ui';
 import { ModalState } from '../../reducers/ui';
@@ -25,28 +25,28 @@ import { Hub } from 'aws-amplify';
 import { FormGroup, Input, Button, Label } from 'reactstrap';
 
 export const EditRecord = (id:string, close : () => void) =>
-    (<AsyncReactor loader={() => Promise.resolve(JSON.parse(
-        /* tslint:disable-next-line */
-        `{"teacher":"TestTeacher","timestamp":1536470092783,"comments":{"6babcc29-14bb-4112-a693-7ab50580f6ea":{"user":"TestStudent","comment":"Another Test Comment","timestamp":1536473064668},"5dfa4017-b804-492e-8566-88bd9eb665bb":{"user":"TestStudent","comment":"Test Comment","timestamp":1536473052265}},"user":"TestStudent","formats":["mp4"],"uploaded":true,"description":"Test Video 1","id":"b1ad5c6f-15e4-4ca8-839d-c044966c237e","tags":{"testTag":1},"title":"test vid 1"}`)
-    )/*getRecord(id)*/}>
+    (<AsyncReactor loader={() => getRecord(store.getState(), id)}>
         {({ loading, result }) => (loading ? <Loader type="Oval"/> :
             <Primatives.EditRecord
-                record={result}
+                record={result.record}
                 submit={(record : RecordSubmitted) => store.dispatch(editRecord.action({
                     record,
                     id,
+                    index: result.index,
                 }) as any)}
                 cancel={close}
                 addComment={(comment:string) => store.dispatch(addComment.action({
                     id,
                     comment,
+                    index: result.index,
                 }) as any)}
             />)}
     </AsyncReactor>);
 
 export const NewRecord = (close : () => void) => (
     <Primatives.NewRecord
-        submit={(record : RecordSubmitted) => store.dispatch(addRecord.action(record) as any)}
+        submit={(record : RecordSubmitted, video: File) =>
+            store.dispatch(addVideo(record, video) as any)}
         cancel={close}
     />
 );

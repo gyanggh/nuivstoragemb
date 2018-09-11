@@ -9,10 +9,10 @@ export interface RecordState {
 export interface RecordSubmitted {
     readonly id?: string;
     tags : RecordTags;
-    title?: string;
+    title: string;
     user?: string;
     teacher?: string;
-    description?: string;
+    description: string;
     readonly uploaded?: boolean;
     timestamp?: number;
     formats?: string[];

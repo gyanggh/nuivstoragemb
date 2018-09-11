@@ -4,12 +4,13 @@ import { Record, RecordSubmitted } from '../reducers/videoRecords';
 import { State } from '../store';
 import { last, flatten } from 'lodash';
 import { Auth } from 'aws-amplify';
+import { createSelector } from 'reselect';
+import { upload } from './videoUpload';
 
 const actionCreator = actionCreatorFactory('videoRecords');
 const actionCreatorAsync = asyncFactory<State>(actionCreator);
 
 const apiUrl = 'https://rfkgf56u78.execute-api.us-west-2.amazonaws.com/Prod';
-const userName = 'TestStudent';
 
 const apiRequest =
     async (props: {
@@ -46,7 +47,6 @@ export const fetchRecords = actionCreatorAsync<{
                 endpoint : '/getVideos',
                 body : {
                     lastIndex,
-                    user : userName,
                     limit : rows - records.map(record => record.length).reduce((a, b) => a + b, 0),
                 },
                 method : 'POST',
@@ -72,7 +72,7 @@ export const editRecord = actionCreatorAsync<{
     'EDIT_RECORD',
     ({ id, record, index }) =>
         apiRequest({
-            endpoint: 'video/' + id,
+            endpoint: '/video/' + id,
             body : record,
             method : 'POST',
         }).then(record => ({
@@ -92,7 +92,7 @@ export const addComment = actionCreatorAsync<{
     'ADD_COMMENT',
     ({ id, comment, index }) =>
         apiRequest({
-            endpoint: 'video/' + id + 'comment/new',
+            endpoint: '/video/' + id + 'comment/new',
             body : comment,
             method : 'POST',
         }).then(record => ({
@@ -105,13 +105,35 @@ export const addRecord = actionCreatorAsync<RecordSubmitted, Record>(
     'ADD_RECORD',
     record =>
         apiRequest({
-            endpoint: 'video/new',
+            endpoint: '/video/new',
             body: record,
             method : 'PUT',
         }),
     );
 
-export const getRecord = (id:string) => apiRequest({
-    endpoint : '/video/' + id,
-    method : 'GET',
-}) as Promise<Record>;
+export const addVideo =
+    (record: RecordSubmitted, video: File) => (async (dispatch : (a: any) => any) => {
+        const { user, teacher, id, title } = await dispatch(addRecord.action(record) as any);
+        return await dispatch(upload.action({
+            user, teacher, id, title,
+            file: video,
+        }));
+    });
+
+export const getRecord = createSelector<State, string, [string, number], Record[], Promise<{
+    record: Record;
+    index?: number;
+}>>(
+    (state: State, id: string) =>
+        [id, state.records.records.map(record => record.id === id).indexOf(true)],
+    (state: State) => state.records.records,
+    async ([id, index], records: Record[]) => index !== -1 ? Promise.resolve({
+        index,
+        record: records[index],
+    }) : {
+        record: await apiRequest({
+            endpoint : '/video/' + id,
+            method : 'GET',
+        }),
+    },
+);

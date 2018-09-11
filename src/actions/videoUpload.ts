@@ -23,10 +23,11 @@ export const upload = actionCreatorAsync<{
     id:string;
 }>(
     'UPLOAD_VIDEO',
-    async ({ user, teacher, file, id, title }, dispatch, getState) => {
+    async ({ user, teacher, file, id }, dispatch, getState) => {
         const location = `${teacher}/${user}/${id}.${last(file.name.split('.'))}`;
         const upload = s3.upload({
             Bucket : bucketName,
+            Body: file,
             Key : location,
         });
         upload.on(

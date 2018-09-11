@@ -5,6 +5,7 @@ import { translate } from '../../helpers';
 import ReactPlayer from 'react-player';
 import { getVideo } from '../../actions/videoUpload';
 import { values, sortBy } from 'lodash';
+import { Input as InputHOC } from 'react-powerplug';
 /* import { RIEInput } from 'riek';
 
 const ExistingPairRenderer = (props : {
@@ -135,35 +136,87 @@ export class VideoTagsEditor extends React.Component<{
     }
 }
 
-export const NewRecord = (
-    { submit, cancel } : { submit : (a : RecordSubmitted) => void, cancel : () => void },
-) => {
-    const tagsRef = React.createRef<VideoTagsEditor>();
-    return (<div className="border rounded m-3 p-5">
-            <h2> {translate('Add New Video')} </h2>
-            <FormGroup>
-              <Label for="videoFile">{translate('Video File')}</Label>
-          {/* TODO: Custom styling for this file input for prettinesssss */}
-              <Input type="file" id="videoFile" name="videoFile"
-              placeholder={translate('Video')} />
-            </FormGroup>
-            <h3> Tags </h3>
-            <VideoTagsEditor ref={tagsRef} record={{}}/>
-            <FormGroup inline>
-                <Button color="primary" onClick={() => submit({
-                    title: 'something',
-                    comments : {},
-                    tags: tagsRef.current ? tagsRef.current.getTags() : {} ,
-                })}>{translate('Submit')}</Button>
-                <Button color="danger" onClick={cancel}>{translate('Cancel')}</Button>
-            </FormGroup>
-        </div>
-    );
-};
+export class NewRecord extends React.Component<{
+    submit : (a : RecordSubmitted, b: File) => void;
+    cancel : () => void;
+}, {
+    title: string;
+    description: string;
+    file?: File;
+}>{
+    constructor(props : any) {
+        super(props);
+        this.state = {
+            title: '',
+            description: '',
+        };
+    }
+    render() {
+        const tagsRef = React.createRef<VideoTagsEditor>();
+        return (<div className="border rounded m-3 p-5">
+                <h2> {translate('Add New Video')} </h2>
+                <FormGroup>
+                    <Label for="Title">{translate('Title')}</Label>
+                    <InputHOC onChange={value => this.setState({
+                        title: value,
+                    })}>
+                        {({ bind }) =>
+                            <Input id="Title" name="Title" placeholder={translate('Title')}
+                            {...bind}/>
+                        }
+                    </InputHOC>
+                </FormGroup>
+                <FormGroup>
+                    <Label for="videoFile">{translate('Video File')}</Label>
+              {/* TODO: Custom styling for this file input for prettinesssss */}
+                    <Input type="file" id="videoFile" name="videoFile"
+                    placeholder={translate('Video')} onChange={ ev => this.setState({
+                        file: (ev.target.files || [])[0],
+                    }) } />
+                </FormGroup>
+                <hr/>
+                <FormGroup>
+                    <Label for="description">{translate('Description')}</Label>
+                    <InputHOC onChange={value => this.setState({
+                        description: value,
+                    })}>
+                        {({ bind }) =>
+                            <Input type="textarea" id="description" name="description"
+                            placeholder={translate('Description')} {...bind} />
+                        }
+                    </InputHOC>
+                </FormGroup>
+                <hr/>
+                <h3> Tags </h3>
+                <VideoTagsEditor ref={tagsRef} record={{}}/>
+                <FormGroup inline>
+                    <Button color="primary" onClick={() => (
+                        (this.state.file != null && this.state.title != null) ?
+                        this.props.submit(
+                            {
+                                title: this.state.title,
+                                description: this.state.description.trim() !== '' ?
+                                    this.state.description :
+                                    'No description',
+                                comments : {},
+                                tags: tagsRef.current ? tagsRef.current.getTags() : {} ,
+                            },
+                            this.state.file,
+                        ) :
+                        alert(translate('Missing Components!')))
+                    }>{translate('Submit')}</Button>
+                    <Button color="danger" onClick={this.props.cancel}>
+                        {translate('Cancel')}
+                    </Button>
+                </FormGroup>
+            </div>
+        );
+    }
+}
 
 export const EditRecord = ({ record, submit, cancel, addComment } :
-    { record: Record; submit : (a : RecordSubmitted) => void,
-        cancel : () => void, addComment : (a:string) => void }) => {
+    { record: Record; submit : (a : RecordSubmitted) => void;
+        cancel : () => void; addComment : (a:string) => void; }) => {
     const tagsRef = React.createRef<VideoTagsEditor>();
     const commentsRef = React.createRef<HTMLInputElement>();
     return (<div className="border rounded">
