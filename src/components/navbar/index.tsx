@@ -54,7 +54,7 @@ const navbar = (props : NavbarProps) => (
     <div>
         <Navbarstrap dark color="dark " fixed="top" expand="md">
             <NavbarToggler onClick={ev => props.toggle() } />
-            <NavbarBrand href="/">Brand</NavbarBrand>
+            <NavbarBrand href="/">{translate('Nuistar')}</NavbarBrand>
             <Collapse isOpen={props.open} navbar>
                 <Nav pills navbar>
                     {props.paths.filter(path => !path.supress).map(
