@@ -2,10 +2,12 @@ import { reducerWithInitialState } from 'typescript-fsa-reducers';
 import { upload, uploadProgress, uploadClear } from '../actions/videoUpload';
 
 export interface UploadState {
+    order : string[];
     [id:string] : {
         progress : number;
         done : boolean;
         title: string;
+        timestamp : number;
     };
 }
 
@@ -16,6 +18,7 @@ const uploadStartedReducer = (state: UploadState, payload: {id:string, title:str
         progress : 0,
         done : false,
     },
+
 });
 
 const uploadDoneReducer = (state: UploadState, payload: {result:{id:string}}) => ({

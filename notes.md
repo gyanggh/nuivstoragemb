@@ -13,6 +13,7 @@
     - User list (dealbreaker? Can be added just may take a while)
     - Good Search (similarily; though it's very "easy" to add later?)
     - Untested
+    - Insecure: anyone with an auth key can do anything.
 - Notes
     - AWS has piss poor docs and too much customization; things take way too long
     - Should be good enough for a tech demo

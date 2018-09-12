@@ -12,7 +12,7 @@ import { setSearchWord, openModal, closeModal,
     toggleAdvancedSearch } from '../../actions/ui';
 import { ModalState } from '../../reducers/ui';
 import { RecordSubmitted, Record } from '../../reducers/videoRecords';
-import { translate } from '../../helpers';
+import { translate, authListener } from '../../helpers';
 import { createSelector } from 'reselect';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
@@ -21,7 +21,6 @@ import 'react-table/react-table.css';
 // const FoldableTable = FoldableTableHOC(ReactTable) as React.ComponentType<Partial<TableProps>>;
 import * as moment from 'moment';
 import { union } from 'lodash';
-import { Hub } from 'aws-amplify';
 import { FormGroup, Input, Button, Label } from 'reactstrap';
 
 export const EditRecord = (id:string, close : () => void) =>
@@ -97,25 +96,9 @@ const mapDispatchToProps = (dispatch : Dispatch) => ({
     toggleSearch: () => dispatch(toggleAdvancedSearch()),
 });
 
-const alex : any = {};
-
-alex.onHubCapsule = (capsule : any) => {
-
-    switch (capsule.payload.event) {
-        case 'signIn':
-        case 'configured':
-            store.dispatch(fetchRecords.action({
-                restart:false,
-            }) as any);
-            break;
-        case 'signUp':
-        case 'signOut':
-        case 'signIn_failure':
-            break;
-    }
-};
-
-Hub.listen('auth', alex);
+authListener.onAuth(() => store.dispatch(fetchRecords.action({
+    restart:true,
+}) as any));
 
 type VideosListProps = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>;
 

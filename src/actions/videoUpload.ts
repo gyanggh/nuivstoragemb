@@ -5,6 +5,8 @@ import { S3 } from 'aws-sdk';
 import { last } from 'lodash';
 import { Record } from '../reducers/videoRecords';
 import { Auth } from 'aws-amplify';
+import { authListener } from '../helpers';
+import { compact } from '../lodash';
 
 const actionCreator = actionCreatorFactory('videoUpload');
 const actionCreatorAsync = asyncFactory<State>(actionCreator);
@@ -12,6 +14,11 @@ const actionCreatorAsync = asyncFactory<State>(actionCreator);
 const bucketName = 'nuistar-videostorage';
 
 let s3 = new S3();
+
+authListener.onAuth(async () => s3 = new S3({
+    credentials: await Auth.currentUserCredentials(),
+    region: 'us-west-2',
+}));
 
 export const upload = actionCreatorAsync<{
     user: string;
@@ -25,10 +32,6 @@ export const upload = actionCreatorAsync<{
 }>(
     'UPLOAD_VIDEO',
     async ({ user, teacher, file, id }, dispatch, getState) => {
-        s3 = new S3({
-            credentials : await Auth.currentCredentials(),
-            region: 'us-west-2',
-        });
         const location = `${teacher}/${user}/${id}.${last(file.name.split('.'))}`;
         const upload = s3.upload({
             Bucket : bucketName,
@@ -55,4 +58,8 @@ export const getVideo = ({
     teacher,
     id,
     formats,
-} : Record) => `https://s3-us-west-2.amazonaws.com/${bucketName}/${teacher}/${user}/${id}.${'mp4'}`;
+    /* tslint:disable-next-line */
+} : Record) => `https://s3-us-west-2.amazonaws.com/${bucketName}/${teacher}/${user}/${id}.${prefer(['mp4'], formats)}`;
+
+const prefer = (prefs : string[], available : string[]) =>
+    compact(prefs.map(pref => available.indexOf(pref) > -1))[0] || available[0];
