@@ -4,7 +4,7 @@ import Loader from 'react-loader-spinner';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { store, State } from '../../store';
-import { goBack } from 'connected-react-router';
+import { goBack, push } from 'connected-react-router';
 import * as Primatives from './videoEditor';
 import { getRecord,
     editRecord, addVideo, fetchRecords, addComment } from '../../actions/videoRecords';
@@ -26,27 +26,29 @@ import { FormGroup, Input, Button, Label } from 'reactstrap';
 
 export const EditRecord = (id:string, close : () => void) =>
     (<AsyncReactor loader={() => getRecord(store.getState(), id)}>
-        {({ loading, result }) => (loading ? <Loader type="Oval"/> :
-            <Primatives.EditRecord
-                record={result.record}
-                submit={(record : RecordSubmitted) => store.dispatch(editRecord.action({
-                    record,
-                    id,
-                    index: result.index,
-                }) as any)}
-                cancel={close}
-                addComment={(comment:string) => store.dispatch(addComment.action({
-                    id,
-                    comment,
-                    index: result.index,
-                }) as any)}
-            />)}
+        {({ loading, result }) => (loading ? <Loader type="Oval"/> :(
+                result != null ? <Primatives.EditRecord
+                    record={result.record}
+                    submit={(record : RecordSubmitted) => store.dispatch(editRecord.action({
+                        record,
+                        id,
+                        index: result.index,
+                    }) as any)}
+                    cancel={close}
+                    addComment={(comment:string) => store.dispatch(addComment.action({
+                        id,
+                        comment,
+                        index: result.index,
+                    }) as any)}
+                /> : <h1> {translate('No such record!')} </h1>
+            ))}
     </AsyncReactor>);
 
 export const NewRecord = (close : () => void) => (
     <Primatives.NewRecord
         submit={(record : RecordSubmitted, video: File) =>
-            store.dispatch(addVideo(record, video) as any)}
+            store.dispatch(addVideo(record, video) as any)
+            .then(({ id } : { id: string }) => store.dispatch(push(`videos/edit/${id}`)))}
         cancel={close}
     />
 );

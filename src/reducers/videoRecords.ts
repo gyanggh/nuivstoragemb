@@ -49,7 +49,7 @@ const fetchRecordsReducer = (state: RecordState, payload : {
     ...state,
     lastIndex : payload.result.lastIndex,
     records : [
-        ...(payload.params.restart ? state.records : []),
+        ...(payload.params.restart ? [] : state.records),
         ...payload.result.records.filter(item => item.uploaded),
     ],
 });

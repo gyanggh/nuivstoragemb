@@ -7,11 +7,13 @@ import thunk from 'redux-thunk';
 import { UIState, uiReducer } from './reducers/ui';
 import { RecordState, recordReducer } from './reducers/videoRecords';
 import { UploadState, uploadReducer } from './reducers/videoUpload';
+import { EventsState, eventReducer } from './reducers/userEvents';
 
 const reducers = combineReducers<Omit<State, 'router'>>({
     ui: uiReducer,
     records: recordReducer,
     uploads: uploadReducer,
+    events: eventReducer,
 }) as Reducer<State>;
 
 export interface State{
@@ -19,6 +21,7 @@ export interface State{
     records: RecordState;
     router: RouterState;
     uploads: UploadState;
+    events: EventsState;
 }
 
 export const history = createBrowserHistory();

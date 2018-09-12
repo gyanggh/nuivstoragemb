@@ -48,14 +48,14 @@ const navbar = (props : NavbarProps) => (
             <NavbarBrand href="/">Brand</NavbarBrand>
             <Collapse isOpen={props.open} navbar>
                 <Nav pills navbar>
-                    {props.paths.map(
+                    {props.paths.filter(path => !path.supress).map(
                         path => path.page ? renderSinglePath(path, '') :
                             <UncontrolledDropdown key={path.prefix} nav inNavbar>
                                 <DropdownToggle nav caret>
                                     {translate(path.nameBase)}
                                 </DropdownToggle>
                                 <DropdownMenu className="bg-dark">
-                                    {path.children.map(
+                                    {path.children.filter(childPath => !childPath.supress).map(
                                         pathEnd =>
                                         <DropdownItem key={pathEnd.name}>
                                             {renderSinglePath(pathEnd, path.prefix)}

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import App from './App';
+// import App from './App';
 import { Provider } from 'react-redux';
 import { Route, Switch } from 'react-router'; // react-router v4
 import { ConnectedRouter } from 'connected-react-router';
@@ -9,8 +9,9 @@ import 'bootstrap/dist/css/bootstrap.css';
 import registerServiceWorker from './registerServiceWorker';
 import { store, history } from './store';
 import { Navbar } from './components/navbar';
-import { NewRecordPage, VideosList } from './components/videolist';
+import { NewRecordPage, EditRecordPage, VideosList } from './components/videolist';
 import { SideModal } from './components/modal';
+import { Dash } from './components/dash';
 import { flatten } from 'lodash';
 
 import Amplify from 'aws-amplify';
@@ -43,23 +44,27 @@ Amplify.configure({
 
 export interface RoutePathEnd {
     page: true;
+    supress?: boolean;
     name: string;
     path: string;
     component: React.ComponentType<any>;
 }
-export type RoutePath = {
-    page:false,
+export interface RoutePathNode{
+    page:false;
     nameBase: string;
     prefix: string;
     children: RoutePathEnd[];
-} | RoutePathEnd;
+}
+export type RoutePath = {
+    supress?: boolean;
+}  & (RoutePathEnd | RoutePathNode);
 
 const paths : RoutePath[] = [
     {
         page:true,
         name: 'Home',
         path:'/',
-        component:App,
+        component:Dash,
     },
     {
         page:true,
@@ -81,13 +86,13 @@ const paths : RoutePath[] = [
             name: 'List',
             path: '/list',
             component: VideosList,
-        }, /* {
-            Edit machine's broken
+        }, {
             page:true,
+            supress: true,
             name: 'Edit',
-            path: '/edit/*',
-            component: props => EditRecordPage(props.match.params.splat),
-        }*/],
+            path: '/edit/:id',
+            component: props => EditRecordPage(props.match.params.id),
+        }],
     },
 ];
 const renderSingleRoute = (path:RoutePath, prefix:string) =>  path.page ?  <Route

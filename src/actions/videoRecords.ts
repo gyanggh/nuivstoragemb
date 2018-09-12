@@ -12,7 +12,7 @@ const actionCreatorAsync = asyncFactory<State>(actionCreator);
 
 const apiUrl = 'https://rfkgf56u78.execute-api.us-west-2.amazonaws.com/Prod';
 
-const apiRequest =
+export const apiRequest =
     async (props: {
         endpoint : string,
         body?: object | string,
@@ -41,7 +41,6 @@ export const fetchRecords = actionCreatorAsync<{
     async ({ rows = 100000, restart }, dispatch, getState) => {
         const records : Record[][] = [];
         let lastIndex : any = restart ? undefined : getState().records.lastIndex;
-        console.log('once');
         do {
             const res = await apiRequest({
                 endpoint : '/getVideos',
@@ -126,7 +125,7 @@ export const getRecord = createSelector<State, string, [string, number], Record[
 }>>(
     (state: State, id: string) =>
         [id, state.records.records.map(record => record.id === id).indexOf(true)],
-    (state: State) => state.records.records,
+    (state: State, id: string) => state.records.records,
     async ([id, index], records: Record[]) => index !== -1 ? Promise.resolve({
         index,
         record: records[index],

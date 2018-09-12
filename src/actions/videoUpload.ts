@@ -4,13 +4,14 @@ import { State } from '../store';
 import { S3 } from 'aws-sdk';
 import { last } from 'lodash';
 import { Record } from '../reducers/videoRecords';
+import { Auth } from 'aws-amplify';
 
 const actionCreator = actionCreatorFactory('videoUpload');
 const actionCreatorAsync = asyncFactory<State>(actionCreator);
 
 const bucketName = 'nuistar-videostorage';
 
-const s3 = new S3();
+let s3 = new S3();
 
 export const upload = actionCreatorAsync<{
     user: string;
@@ -24,6 +25,10 @@ export const upload = actionCreatorAsync<{
 }>(
     'UPLOAD_VIDEO',
     async ({ user, teacher, file, id }, dispatch, getState) => {
+        s3 = new S3({
+            credentials : await Auth.currentCredentials(),
+            region: 'us-west-2',
+        });
         const location = `${teacher}/${user}/${id}.${last(file.name.split('.'))}`;
         const upload = s3.upload({
             Bucket : bucketName,
