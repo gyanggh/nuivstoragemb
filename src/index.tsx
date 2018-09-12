@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-// import App from './App';
+import App from './App';
 import { Provider } from 'react-redux';
 import { Route, Switch } from 'react-router'; // react-router v4
 import { ConnectedRouter } from 'connected-react-router';
@@ -11,7 +11,8 @@ import { store, history } from './store';
 import { Navbar } from './components/navbar';
 import { NewRecordPage, EditRecordPage, VideosList } from './components/videolist';
 import { SideModal } from './components/modal';
-import { Dash } from './components/dash';
+// import { Dash } from './components/dash';
+import { UploadIndicator } from './components/uploadIndicator';
 import { flatten } from 'lodash';
 
 import Amplify from 'aws-amplify';
@@ -64,15 +65,8 @@ const paths : RoutePath[] = [
         page:true,
         name: 'Home',
         path:'/',
-        component:Dash,
-    },
-    {
-        page:true,
-        name:'Test',
-        path:'/test',
-        component: () => (<div>Lol test</div>),
-    },
-    {
+        component:App,
+    }, {
         page:false,
         nameBase:'Videos',
         prefix:'/videos',
@@ -123,6 +117,7 @@ const AppContainers : React.SFC = (props: {
                         </Switch>
                     </div>
                     <div><SideModal/></div>
+                    <UploadIndicator/>
                 </div>
             </ConnectedRouter>
         </Provider> : null);

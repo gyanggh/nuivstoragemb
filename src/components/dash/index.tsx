@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { fetchEvents } from '../../actions/userEvents';
-import { State } from '../../store';
+import { State, store } from '../../store';
 import { Dispatch } from 'redux';
 import * as InfiniteScroll from 'react-infinite-scroll-component';
-import { translate } from '../../helpers';
+import { translate, authListener } from '../../helpers';
 import { Card, CardImg, CardText, CardBody,
   CardTitle, CardSubtitle } from 'reactstrap';
 
@@ -21,6 +21,11 @@ const mapDispatchToProps = (dispatch : Dispatch) => ({
 });
 
 type DashProps = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>;
+
+authListener.onAuth(() => store.dispatch(fetchEvents.action({
+    restart: true,
+    rows:20,
+}) as any));
 
 export const Dash =
     connect(mapStateToProps, mapDispatchToProps)(

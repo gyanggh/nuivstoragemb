@@ -8,25 +8,34 @@ import {
     NavbarBrand,
     Nav,
     NavItem,
+    NavLink as NavButton,
     DropdownMenu,
     UncontrolledDropdown,
     DropdownToggle,
     DropdownItem,
 } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
-import { State } from '../../store';
-import { toggleNav } from '../../actions/ui';
+import { push } from 'connected-react-router';
+import { State, store } from '../../store';
+import { toggleNav, setUsername } from '../../actions/ui';
 import { RoutePath, RoutePathEnd } from '../../index';
-import { translate } from '../../helpers';
+import { translate, authListener } from '../../helpers';
+import { Auth } from 'aws-amplify';
 
 const mapStateToProps = ({ ui }: State, { paths } : {paths:RoutePath[]}) => ({
     paths,
     open: ui.navOpen,
+    username : ui.username,
 });
 
 const mapDispatchToProps = {
+    push,
     toggle: toggleNav,
 };
+
+authListener.onAuth(async () => store.dispatch(setUsername(
+    (await Auth.currentUserInfo()).username,
+)));
 
 const stateProps = returntypeof(mapStateToProps);
 type NavbarProps = (typeof stateProps) & (typeof mapDispatchToProps);
@@ -54,7 +63,7 @@ const navbar = (props : NavbarProps) => (
                                 <DropdownToggle nav caret>
                                     {translate(path.nameBase)}
                                 </DropdownToggle>
-                                <DropdownMenu className="bg-dark">
+                                <DropdownMenu right className="bg-dark">
                                     {path.children.filter(childPath => !childPath.supress).map(
                                         pathEnd =>
                                         <DropdownItem key={pathEnd.name}>
@@ -65,9 +74,26 @@ const navbar = (props : NavbarProps) => (
                             </UncontrolledDropdown>,
                      )}
                 </Nav>
-                <Nav navbar className="ml-md-auto">
-                    <NavItem className="ml-auto">
-                        auth
+                <Nav pills navbar className="ml-auto">
+                    <NavItem>
+                        <UncontrolledDropdown nav inNavbar right>
+                            <DropdownToggle nav caret>
+                                {translate('Account')}
+                            </DropdownToggle>
+                            <DropdownMenu className="bg-dark">
+                                <DropdownItem>
+                                   <span className="text-light">{props.username}</span>
+                                </DropdownItem>
+                                <DropdownItem>
+                                   <NavButton onClick={
+                                       () =>
+                                       Auth.signOut()
+                                       .then(() => window.location.href = '/')}>
+                                       {translate('Sign Out')}
+                                   </NavButton>
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </UncontrolledDropdown>
                     </NavItem>
                 </Nav>
             </Collapse>

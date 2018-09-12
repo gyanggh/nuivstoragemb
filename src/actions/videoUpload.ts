@@ -6,7 +6,6 @@ import { last } from 'lodash';
 import { Record } from '../reducers/videoRecords';
 import { Auth } from 'aws-amplify';
 import { authListener } from '../helpers';
-import { compact } from '../lodash';
 
 const actionCreator = actionCreatorFactory('videoUpload');
 const actionCreatorAsync = asyncFactory<State>(actionCreator);
@@ -62,4 +61,7 @@ export const getVideo = ({
 } : Record) => `https://s3-us-west-2.amazonaws.com/${bucketName}/${teacher}/${user}/${id}.${prefer(['mp4'], formats)}`;
 
 const prefer = (prefs : string[], available : string[]) =>
-    compact(prefs.map(pref => available.indexOf(pref) > -1))[0] || available[0];
+    require(prefs, available) || available[0];
+
+const require = (prefs : string[] = [], available : string[] = []) =>
+    prefs.filter(pref => available.indexOf(pref) > -1)[0];

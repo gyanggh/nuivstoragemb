@@ -2,6 +2,7 @@ import { reducerWithInitialState } from 'typescript-fsa-reducers';
 import { toggleNav, closeNav, setSearchWord, openModal,
     closeModal,
     toggleAdvancedSearch,
+    setUsername,
 } from '../actions/ui';
 import { ReactNode } from 'react';
 
@@ -10,6 +11,7 @@ export interface UIState {
     searchWord:string;
     modal?: ModalState;
     advancedSearch:boolean;
+    username: string;
 }
 
 export interface ModalState {
@@ -21,6 +23,7 @@ const INITAL_UI_STATE: UIState = {
     navOpen: false,
     searchWord : '',
     advancedSearch:false,
+    username: '',
 };
 
 const toggleNavReducer = (state: UIState) => ({
@@ -53,6 +56,11 @@ const searchToggleReducer = (state: UIState) => ({
     advancedSearch:!state.advancedSearch,
 });
 
+const setUsernameReducer = (state: UIState, username: string) => ({
+    ...state,
+    username,
+});
+
 export const uiReducer =
     reducerWithInitialState(INITAL_UI_STATE)
         .case(toggleNav, toggleNavReducer)
@@ -61,4 +69,5 @@ export const uiReducer =
         .case(openModal, openModalReducer)
         .case(closeModal, closeModalReducer)
         .case(toggleAdvancedSearch, searchToggleReducer)
+        .case(setUsername, setUsernameReducer)
         .build();

@@ -5,3 +5,5 @@ declare module 'react-loader-spinner';
 declare module 'react-table/lib/hoc/foldableTable';
 declare module 'react-beforeunload';
 declare module 'riek';
+declare module 'react-video-thumbnail';
+declare module 'react-auto-scale';

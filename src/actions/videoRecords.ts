@@ -91,7 +91,7 @@ export const addComment = actionCreatorAsync<{
     'ADD_COMMENT',
     ({ id, comment, index }) =>
         apiRequest({
-            endpoint: '/video/' + id + 'comment/new',
+            endpoint: '/video/' + id + '/comment/new',
             body : comment,
             method : 'POST',
         }).then(record => ({

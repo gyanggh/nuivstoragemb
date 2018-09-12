@@ -13,3 +13,5 @@ export const openModal = actionCreator<ModalState>('OPEN_MODAL');
 export const closeModal = actionCreator<void>('CLOSE_MODAL');
 
 export const toggleAdvancedSearch = actionCreator<void>('TOGGLE_SEARCH');
+
+export const setUsername = actionCreator<string>('SET_USERNAME');

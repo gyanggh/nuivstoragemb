@@ -4,7 +4,7 @@ import Loader from 'react-loader-spinner';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { store, State } from '../../store';
-import { goBack, push } from 'connected-react-router';
+import { goBack } from 'connected-react-router';
 import * as Primatives from './videoEditor';
 import { getRecord,
     editRecord, addVideo, fetchRecords, addComment } from '../../actions/videoRecords';
@@ -22,17 +22,23 @@ import 'react-table/react-table.css';
 import * as moment from 'moment';
 import { union } from 'lodash';
 import { FormGroup, Input, Button, Label } from 'reactstrap';
+// import VideoThumbnail from 'react-video-thumbnail';
+// import AutoScale from 'react-auto-scale';
+// import { getVideo } from '../../actions/videoUpload';
 
 export const EditRecord = (id:string, close : () => void) =>
     (<AsyncReactor loader={() => getRecord(store.getState(), id)}>
         {({ loading, result }) => (loading ? <Loader type="Oval"/> :(
                 result != null ? <Primatives.EditRecord
                     record={result.record}
-                    submit={(record : RecordSubmitted) => store.dispatch(editRecord.action({
-                        record,
-                        id,
-                        index: result.index,
-                    }) as any)}
+                    submit={(record : RecordSubmitted) => {
+                        store.dispatch(editRecord.action({
+                            record,
+                            id,
+                            index: result.index,
+                        }) as any);
+                        close();
+                    }}
                     cancel={close}
                     addComment={(comment:string) => store.dispatch(addComment.action({
                         id,
@@ -45,9 +51,10 @@ export const EditRecord = (id:string, close : () => void) =>
 
 export const NewRecord = (close : () => void) => (
     <Primatives.NewRecord
-        submit={(record : RecordSubmitted, video: File) =>
-            store.dispatch(addVideo(record, video) as any)
-            .then(({ id } : { id: string }) => store.dispatch(push(`videos/edit/${id}`)))}
+        submit={(record : RecordSubmitted, video: File) => {
+            store.dispatch(addVideo(record, video) as any);
+            close();
+        }}
         cancel={close}
     />
 );
@@ -93,6 +100,9 @@ const mapDispatchToProps = (dispatch : Dispatch) => ({
     loadRows : () => dispatch(fetchRecords.action({
         restart : false,
     }) as any),
+    refresh: () => dispatch(fetchRecords.action({
+        restart : true,
+    }) as any),
     toggleSearch: () => dispatch(toggleAdvancedSearch()),
 });
 
@@ -110,6 +120,9 @@ const VideosListElem = (props : VideosListProps) => (
             <Input value={props.searchWord} onChange={ev => props.search(ev.target.value)}/>
         </FormGroup> : null}
         <Button onClick={props.toggleSearch}>Toggle Advanced Search</Button>
+        <Button className="float-right" onClick={props.refresh}>
+            <span className="fa fa-refresh"/>
+        </Button>
         <ReactTable
         data={props.records}
         getTrProps={(state : any, rowInfo: any, column: any) => ({
@@ -118,7 +131,7 @@ const VideosListElem = (props : VideosListProps) => (
                     children: [
                         rowInfo.original.title || translate('Untitled Video'),
                         EditRecord(rowInfo.original.id, props.closeModal),
-                        'Idk',
+                        '',
                     ],
                     direction: 'right',
                 });
@@ -128,11 +141,16 @@ const VideosListElem = (props : VideosListProps) => (
             },
         })}
         filterable={props.advancedSearch}
-        columns={[{
+        /*{
             Header:translate('Thumbnail'),
-            accessor: 'id',
-            Cell : () => <span> Coming soon! </span>,
-        }, {
+            id: 'Thumbnail',
+            accessor: obj => obj,
+            Cell : props =>
+            <AutoScale>
+                <VideoThumbnail videoUrl={getVideo(props.value)} height={100} />
+            </AutoScale>,
+        },*/
+        columns={[{
             Header:translate('Title'),
             accessor: 'title',
         }, {

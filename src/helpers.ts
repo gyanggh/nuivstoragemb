@@ -37,4 +37,3 @@ export const authListener : {
 };
 
 Hub.listen('auth', authListener);
-
