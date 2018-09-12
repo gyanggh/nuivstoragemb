@@ -28,6 +28,7 @@
     "react-auto-scale": "^1.0.4",
     "react-beforeunload": "^1.0.4",
     "react-dom": "^16.4.2",
+    "react-error-boundary": "^1.2.3",
     "react-infinite-scroll-component": "^4.2.0",
     "react-key-value": "^2.0.0",
     "react-loader-spinner": "^2.1.0",

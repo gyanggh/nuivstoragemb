@@ -58,7 +58,7 @@ export const getVideo = ({
     id,
     formats,
     /* tslint:disable-next-line */
-} : Record) => `https://s3-us-west-2.amazonaws.com/${bucketName}/${teacher}/${user}/${id}.${prefer(['mp4'], formats)}`;
+} : Record) => `https://d39rj774o1qwc0.cloudfront.net/${teacher}/${user}/${id}.${prefer(['mp4'], formats)}`;
 
 const prefer = (prefs : string[], available : string[]) =>
     require(prefs, available) || available[0];

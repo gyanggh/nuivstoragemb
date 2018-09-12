@@ -7,3 +7,4 @@ declare module 'react-beforeunload';
 declare module 'riek';
 declare module 'react-video-thumbnail';
 declare module 'react-auto-scale';
+declare module 'react-error-boundary';

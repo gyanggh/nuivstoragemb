@@ -5,6 +5,8 @@ import { Provider } from 'react-redux';
 import { Route, Switch } from 'react-router'; // react-router v4
 import { ConnectedRouter } from 'connected-react-router';
 import './index.css';
+import * as reactstraptemp from 'reactstrap';
+const { Jumbotron, UncontrolledCollapse, Button } = reactstraptemp as any;
 import 'bootstrap/dist/css/bootstrap.css';
 import registerServiceWorker from './registerServiceWorker';
 import { store, history } from './store';
@@ -14,9 +16,12 @@ import { SideModal } from './components/modal';
 // import { Dash } from './components/dash';
 import { UploadIndicator } from './components/uploadIndicator';
 import { flatten } from 'lodash';
+import { translate } from './helpers';
 
 import Amplify from 'aws-amplify';
 import { Authenticator, Greetings } from 'aws-amplify-react'; // or 'aws-amplify-react-native';
+
+import ErrorBoundary from 'react-error-boundary';
 
 Amplify.configure({
     Auth: {
@@ -67,6 +72,12 @@ const paths : RoutePath[] = [
         path:'/',
         component:App,
     }, {
+        page:true,
+        supress: true,
+        name: 'Home',
+        path:'/index.html',
+        component:App,
+    }, {
         page:false,
         nameBase:'Videos',
         prefix:'/videos',
@@ -104,6 +115,7 @@ const AppContainers : React.SFC = (props: {
     'confirmSignUp' | 'forgotPassword' | 'verifyContact' | 'signedIn';
     authData: any;
     children:any;
+    // tslint:disable-next-line
 }) => (props.authState === 'signedIn' ? <Provider store={store}>
             <ConnectedRouter history={history} >
                 <div>
@@ -113,7 +125,7 @@ const AppContainers : React.SFC = (props: {
                     <div className="pt-5">
                         <Switch>
                             {renderRoutePath(paths)}
-                             <Route render={() => (<div>404 lol idk</div>)} />
+                             <Route component={NotFound} />
                         </Switch>
                     </div>
                     <div><SideModal/></div>
@@ -121,10 +133,44 @@ const AppContainers : React.SFC = (props: {
                 </div>
             </ConnectedRouter>
         </Provider> : null);
+
+const ErrorMessage = ({ componentStack, error } : any) => (
+    <Jumbotron style={{
+        position: 'fixed',
+        width:'100vw',
+        height:'100vh',
+    }}>
+        <h1 className="display-3">{translate('Sorry!')} 😢</h1>
+        <p className="lead">{translate('Something went wrong! Try reloading?')}</p>
+        <hr className="my-2" />
+        <p>{translate('If you want to know what went wrong, click here')}</p>
+        <p className="lead">
+          <Button id="stackToggler" color="danger">{translate('Error Log')}</Button>
+          <UncontrolledCollapse toggler="#stackToggler">
+              <p><h3>{translate('Error')}</h3> {error.toString()}</p>
+              <p><h3>{translate('Stacktrace')}</h3> <pre>{componentStack}</pre></p>
+          </UncontrolledCollapse>
+        </p>
+    </Jumbotron>
+);
+
+const NotFound = (props : any) => (
+    <Jumbotron style={{
+        position: 'fixed',
+        width:'100vw',
+        height:'100vh',
+    }}>
+        <h1 className="display-3">{translate('Sorry!')} 😢</h1>
+        <hr className="my-2" />
+        <p className="lead">{translate('Cant find that page!')}</p>
+    </Jumbotron>
+);
 ReactDOM.render(
-    <Authenticator hide={[Greetings]}>
-        <AppContainers />
-    </Authenticator>,
+    <ErrorBoundary FallbackComponent={ErrorMessage}>
+        <Authenticator hide={[Greetings]}>
+            <AppContainers />
+        </Authenticator>
+    </ErrorBoundary>,
     document.getElementById('root') as HTMLElement,
 );
 registerServiceWorker();
