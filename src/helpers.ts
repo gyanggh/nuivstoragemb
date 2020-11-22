@@ -22,13 +22,14 @@ export const authListener : {
 } = {
     onHubCapsule: (capsule : any) => {
         switch (capsule.payload.event) {
-            case 'signIn':
+            case 'signIn': console.log('signIn');
             case 'configured':
+                console.log('configured');
                 authListener.events.forEach(a => a());
                 break;
-            case 'signUp':
-            case 'signOut':
-            case 'signIn_failure':
+            case 'signUp': console.log('signUp');
+            case 'signOut': console.log('signOut');
+            case 'signIn_failure': console.log('signIn_failure');
                 break;
         }
     },

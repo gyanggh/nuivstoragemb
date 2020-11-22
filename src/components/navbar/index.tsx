@@ -33,8 +33,10 @@ const mapDispatchToProps = {
     toggle: toggleNav,
 };
 
+const user:any = async () => await Auth.currentUserInfo();
+
 authListener.onAuth(async () => store.dispatch(setUsername(
-    (await Auth.currentUserInfo()).username,
+    user ? user.username : null,
 )));
 
 const stateProps = returntypeof(mapStateToProps);

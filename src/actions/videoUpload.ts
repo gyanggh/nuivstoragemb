@@ -14,8 +14,10 @@ const bucketName = 'nuistar-videostorage';
 
 let s3 = new S3();
 
+const user:any = async () => await Auth.currentUserInfo();
+
 authListener.onAuth(async () => s3 = new S3({
-    credentials: await Auth.currentUserCredentials(),
+    credentials: user ? await Auth.currentUserCredentials() : '',
     region: 'us-west-2',
 }));
 
