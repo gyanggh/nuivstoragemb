@@ -25,27 +25,29 @@ import ErrorBoundary from 'react-error-boundary';
 
 Amplify.configure({
     Auth: {
-        identityPoolId: 'us-west-2:277f4c68-6351-4694-bed7-c345fc5c7cf1',
+        identityPoolId: 'us-west-2:35020fb6-eb7a-453d-a7c8-3b3dd90c1d4b',
         // REQUIRED - Amazon Cognito Region
         region: 'us-west-2',
 
         // OPTIONAL - Amazon Cognito User Pool ID
-        userPoolId: 'us-west-2_Vfbr9hUR9',
+        // userPoolId: 'us-west-2_Vfbr9hUR9',
+        userPoolId: 'us-west-2_DUsbBCYMq',
 
         // OPTIONAL - Amazon Cognito Web Client ID (26-char alphanumeric string)
-        userPoolWebClientId: '5uk1j4ti7u3vm5l83fd6g4bmo6',
+        // userPoolWebClientId: '5uk1j4ti7u3vm5l83fd6g4bmo6',
+        userPoolWebClientId:'3bo161fgro4i7p5lol2nouaqel',
 
         // OPTIONAL - Enforce user authentication prior to accessing AWS resources or not
         mandatorySignIn: true,
     },
-    API: {
-        endpoints: [
-            {
-                name: 'APIGateway',
-                endpoint: 'https://rfkgf56u78.execute-api.us-west-2.amazonaws.com/Prod',
-            },
-        ],
-    },
+    // API: {
+    //     endpoints: [
+    //         {
+    //             name: 'APIGateway',
+    //             endpoint: 'https://rfkgf56u78.execute-api.us-west-2.amazonaws.com/Prod',
+    //         },
+    //     ],
+    // },
 });
 
 export interface RoutePathEnd {
@@ -116,7 +118,9 @@ const AppContainers : React.SFC = (props: {
     authData: any;
     children:any;
     // tslint:disable-next-line
-}) => (props.authState === 'signedIn' ? <Provider store={store}>
+}) => {
+    console.log(props.authState);
+    return((props.authState === 'signedIn' ? <Provider store={store}>
             <ConnectedRouter history={history} >
                 <div>
                     <Switch>
@@ -132,7 +136,8 @@ const AppContainers : React.SFC = (props: {
                     <UploadIndicator/>
                 </div>
             </ConnectedRouter>
-        </Provider> : null);
+        </Provider> : null));
+};
 
 const ErrorMessage = ({ componentStack, error } : any) => (
     <Jumbotron style={{
